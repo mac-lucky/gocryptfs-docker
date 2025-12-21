@@ -1,10 +1,10 @@
 FROM golang:alpine AS builder
 
-ARG GOCRYPTFS_VERSION=v2.6.1
+ARG GOCRYPTFS_VERSION=2.6.1
 
 RUN apk add --no-cache bash gcc git musl-dev openssl-dev
 
-RUN go install github.com/rfjakob/gocryptfs/v2@${GOCRYPTFS_VERSION}
+RUN go install github.com/rfjakob/gocryptfs/v2@v${GOCRYPTFS_VERSION}
 
 FROM alpine:latest
 
