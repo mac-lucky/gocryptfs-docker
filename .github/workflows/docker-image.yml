@@ -1,0 +1,33 @@
+name: Docker Image for gocryptfs
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  push:
+    branches: [ "master" ]
+    paths-ignore:
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  security-events: write
+
+jobs:
+  build:
+    uses: mac-lucky/actions-shared-workflows/.github/workflows/docker-cicd-reusable.yml@master
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+    with:
+      app_name: "gocryptfs"
+      dockerhub_image: "maclucky/gocryptfs"
+      ghcr_image: "ghcr.io/mac-lucky/gocryptfs-docker"
+      upstream_repo: "rfjakob/gocryptfs"
+      version_strip_prefix: "v"
+      build_arg_name: "GOCRYPTFS_VERSION"
+      enable_version_check: true
+      enable_schedule_build: true
+      enable_security_scan: true
+      platforms: "linux/amd64,linux/arm64"
