@@ -1,3 +1,5 @@
+<img src="icon.svg" width="96" align="right" alt="">
+
 # gocryptfs-docker
 
 Dockerized [rfjakob/gocryptfs](https://github.com/rfjakob/gocryptfs) - encrypted filesystem overlay.
