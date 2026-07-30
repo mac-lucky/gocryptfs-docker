@@ -8,12 +8,13 @@ Dockerized [rfjakob/gocryptfs](https://github.com/rfjakob/gocryptfs) - encrypted
 
 - Multi-arch support (amd64/arm64)
 - Daily automated builds checking for new gocryptfs releases
-- Published to Docker Hub and GitHub Container Registry
+- Published to GitHub Container Registry
 
 ## Images
 
-- `maclucky/gocryptfs:latest`
 - `ghcr.io/mac-lucky/gocryptfs-docker:latest`
+
+Docker Hub (`maclucky/gocryptfs`) has not been updated since December 2025 - use GHCR.
 
 ## Usage
 
@@ -22,7 +23,7 @@ Dockerized [rfjakob/gocryptfs](https://github.com/rfjakob/gocryptfs) - encrypted
 ```bash
 docker run --rm -it \
   -v /path/to/encrypted:/encrypted \
-  maclucky/gocryptfs -init /encrypted
+  ghcr.io/mac-lucky/gocryptfs-docker -init /encrypted
 ```
 
 ### Mount encrypted directory
@@ -33,7 +34,7 @@ docker run -d --privileged \
   --device /dev/fuse \
   -v /path/to/encrypted:/encrypted \
   -v /path/to/decrypted:/decrypted:shared \
-  maclucky/gocryptfs -allow_other /encrypted /decrypted
+  ghcr.io/mac-lucky/gocryptfs-docker -allow_other /encrypted /decrypted
 ```
 
 ### Kubernetes sidecar
@@ -47,20 +48,47 @@ spec:
   template:
     spec:
       initContainers:
+        # Creates gocryptfs.conf on first run, nothing else. A mount made here would be
+        # torn down when the init container exits, so the sidecar below owns the mount.
+        # -e matters: without it a failed init still exits 0 and the pod carries on.
         - name: gocryptfs-init
-          image: maclucky/gocryptfs:latest
-          securityContext:
-            privileged: true
+          image: ghcr.io/mac-lucky/gocryptfs-docker:latest
           command:
             - /bin/sh
+            - -eu
             - -c
             - |
               if [ ! -f /encrypted/gocryptfs.conf ]; then
                 echo "$GOCRYPTFS_PASSPHRASE" | gocryptfs -init -passfile /dev/stdin /encrypted
               fi
-              echo "$GOCRYPTFS_PASSPHRASE" | gocryptfs -passfile /dev/stdin -allow_other /encrypted /decrypted
-              touch /decrypted/.ready
-              sleep 5
+          env:
+            - name: GOCRYPTFS_PASSPHRASE
+              valueFrom:
+                secretKeyRef:
+                  name: gocryptfs-passphrase
+                  key: passphrase
+          volumeMounts:
+            - name: encrypted-storage
+              mountPath: /encrypted
+        # Native sidecar (k8s 1.29+). myapp is not started until the startupProbe sees a
+        # real mount on /decrypted, so a failed mount cannot leave myapp writing plaintext
+        # into the emptyDir.
+        - name: gocryptfs-sidecar
+          image: ghcr.io/mac-lucky/gocryptfs-docker:latest
+          restartPolicy: Always
+          securityContext:
+            privileged: true
+          command:
+            - /bin/sh
+            - -eu
+            - -c
+            - |
+              echo "$GOCRYPTFS_PASSPHRASE" | gocryptfs -passfile /dev/stdin -allow_other -fg /encrypted /decrypted
+          startupProbe:
+            exec:
+              command: ["/bin/sh", "-c", "mountpoint -q /decrypted"]
+            periodSeconds: 2
+            failureThreshold: 30
           env:
             - name: GOCRYPTFS_PASSPHRASE
               valueFrom:
@@ -74,28 +102,6 @@ spec:
               mountPath: /decrypted
               mountPropagation: Bidirectional
       containers:
-        - name: gocryptfs-sidecar
-          image: maclucky/gocryptfs:latest
-          securityContext:
-            privileged: true
-          command:
-            - /bin/sh
-            - -c
-            - |
-              echo "$GOCRYPTFS_PASSPHRASE" | gocryptfs -passfile /dev/stdin -allow_other -fg /encrypted /decrypted &
-              wait $!
-          env:
-            - name: GOCRYPTFS_PASSPHRASE
-              valueFrom:
-                secretKeyRef:
-                  name: gocryptfs-passphrase
-                  key: passphrase
-          volumeMounts:
-            - name: encrypted-storage
-              mountPath: /encrypted
-            - name: decrypted-data
-              mountPath: /decrypted
-              mountPropagation: Bidirectional
         - name: myapp
           image: myapp:latest
           volumeMounts:
