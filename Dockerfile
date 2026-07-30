@@ -6,7 +6,9 @@ ARG GOCRYPTFS_VERSION=2.6.1
 # chacha20poly1305, so none of that code is reachable, but the module version is
 # recorded in the binary and image scanners flag it. Upstream master has already
 # bumped x/crypto; no release carries it yet, so do the bump here.
-ARG XCRYPTO_VERSION=0.54.0
+# Renovate keeps this current - see .github/renovate.json. Keep the "v" in the
+# value: the version it writes back is a Go module version, prefix included.
+ARG XCRYPTO_VERSION=v0.54.0
 
 RUN apk add --no-cache bash gcc git musl-dev openssl-dev
 
@@ -22,7 +24,7 @@ WORKDIR /src
 # metadata "go install" used to supply; a git checkout reports itself as
 # "(devel)" and gocryptfs would print a "not set" placeholder without them.
 # -version at the end fails the build if the bumped dependency broke anything.
-RUN go get "golang.org/x/crypto@v${XCRYPTO_VERSION}" && \
+RUN go get "golang.org/x/crypto@${XCRYPTO_VERSION}" && \
     go build -o /go/bin/gocryptfs \
       -ldflags="-X main.GitVersion=v${GOCRYPTFS_VERSION} -X main.GitVersionFuse=$(go list -m -f '{{.Version}}' github.com/hanwen/go-fuse/v2) -X main.BuildDate=$(date -u +%Y-%m-%d)" \
       . && \
