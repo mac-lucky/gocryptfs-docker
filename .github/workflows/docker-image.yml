@@ -32,5 +32,6 @@ jobs:
       enable_version_check: true
       enable_schedule_build: true
       enable_security_scan: true
+      govulncheck_binary: "/usr/local/bin/gocryptfs"
       platforms: "linux/amd64,linux/arm64"
       push_to_dockerhub: false
