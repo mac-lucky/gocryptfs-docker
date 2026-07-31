@@ -7,15 +7,16 @@ Dockerized [rfjakob/gocryptfs](https://github.com/rfjakob/gocryptfs) - encrypted
 ## Features
 
 - Multi-arch support (amd64/arm64)
-- Daily automated builds checking for new gocryptfs releases
+- Renovate tracks new gocryptfs releases and x/crypto versions, opens a PR,
+  and a merge to master tags a release build
 - Published to GitHub Container Registry
 
 gocryptfs releases lag their own dependencies - v2.6.1 still pins a
 `golang.org/x/crypto` with known advisories, and upstream has not tagged a
 release since. The image is built from the release tag with that dependency
-raised, Renovate opens a PR when a newer one lands, and merging it rebuilds and
-rescans the image. The published image is also scanned on a schedule, so it does
-not sit unwatched between builds.
+raised. Renovate opens a PR when a newer gocryptfs release or x/crypto version
+lands; merging bumps the `ARG` in the Dockerfile, which auto-tags a release and
+triggers a scanned, multi-arch rebuild.
 
 ## Images
 

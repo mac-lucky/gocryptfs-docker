@@ -1,0 +1,20 @@
+name: Auto Tag
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - Dockerfile
+
+permissions:
+  contents: read
+
+jobs:
+  tag:
+    uses: mac-lucky/actions-shared-workflows/.github/workflows/auto-tag-reusable.yml@master
+    with:
+      mode: upstream-arg
+      arg_name: GOCRYPTFS_VERSION
+      dockerfile_path: ./Dockerfile
+    secrets:
+      TAG_PUSH_TOKEN: ${{ secrets.TAG_PUSH_TOKEN }}
