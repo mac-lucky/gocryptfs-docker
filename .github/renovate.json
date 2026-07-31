@@ -1,27 +1,43 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>mac-lucky/actions-shared-workflows"],
+  "extends": [
+    "github>mac-lucky/actions-shared-workflows"
+  ],
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["^Dockerfile$"],
-      "matchStrings": ["ARG GOCRYPTFS_VERSION=\"?(?<currentValue>[^\"\\s]+)\"?"],
+      "managerFilePatterns": [
+        "^Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG GOCRYPTFS_VERSION=\"?(?<currentValue>[^\"\\s]+)\"?"
+      ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "rfjakob/gocryptfs",
       "extractVersionTemplate": "^v(?<version>.*)$"
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["^Dockerfile$"],
-      "matchStrings": ["ARG XCRYPTO_VERSION=\"?(?<currentValue>[^\"\\s]+)\"?"],
+      "managerFilePatterns": [
+        "^Dockerfile$"
+      ],
+      "matchStrings": [
+        "ARG XCRYPTO_VERSION=\"?(?<currentValue>[^\"\\s]+)\"?"
+      ],
       "datasourceTemplate": "go",
       "depNameTemplate": "golang.org/x/crypto"
     }
   ],
   "packageRules": [
     {
-      "matchDepNames": ["rfjakob/gocryptfs"],
-      "automerge": true
+      "matchDepNames": [
+        "rfjakob/gocryptfs"
+      ],
+      "automerge": true,
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
     }
   ]
 }
