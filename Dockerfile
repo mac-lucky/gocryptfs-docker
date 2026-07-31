@@ -1,4 +1,4 @@
-FROM golang:alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 ARG GOCRYPTFS_VERSION=2.6.1
 # gocryptfs v2.6.1 pins golang.org/x/crypto v0.33.0, which carries a batch of
@@ -30,7 +30,7 @@ RUN go get "golang.org/x/crypto@${XCRYPTO_VERSION}" && \
       . && \
     /go/bin/gocryptfs -version
 
-FROM alpine:latest
+FROM alpine:3.22
 
 COPY --from=builder /go/bin/gocryptfs /usr/local/bin/gocryptfs
 
