@@ -34,7 +34,10 @@ FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec4
 
 COPY --from=builder /go/bin/gocryptfs /usr/local/bin/gocryptfs
 
-RUN apk add --no-cache fuse bash && \
+# apk upgrade first: the digest-pinned base can lag Alpine package fixes, and
+# upgrading at build picks them up without waiting for a base-image rebuild.
+RUN apk upgrade --no-cache && \
+    apk add --no-cache fuse bash && \
     echo "user_allow_other" >> /etc/fuse.conf
 
 LABEL org.opencontainers.image.source="https://github.com/mac-lucky/gocryptfs-docker"
