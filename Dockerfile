@@ -8,7 +8,7 @@ ARG GOCRYPTFS_VERSION=2.6.1
 # bumped x/crypto; no release carries it yet, so do the bump here.
 # Renovate keeps this current - see .github/renovate.json. Keep the "v" in the
 # value: the version it writes back is a Go module version, prefix included.
-ARG XCRYPTO_VERSION=v0.55.0
+ARG XCRYPTO_VERSION=v0.56.0
 
 RUN apk add --no-cache bash gcc git musl-dev openssl-dev
 
