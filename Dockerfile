@@ -1,4 +1,4 @@
-FROM golang:1.27-alpine@sha256:cf6fca6641884b8433441b2b0652976f975e1d0fdd26d177eaaf8596087f3125 AS builder
+FROM golang:1.27-alpine@sha256:4cb7ac979db5fcc41cae44b2227ba5ab8a51e8807f40d9ba4dee20a0ad960b5b AS builder
 
 ARG GOCRYPTFS_VERSION=2.6.1
 # gocryptfs v2.6.1 pins golang.org/x/crypto v0.33.0, which carries a batch of
@@ -30,7 +30,7 @@ RUN go get "golang.org/x/crypto@${XCRYPTO_VERSION}" && \
       . && \
     /go/bin/gocryptfs -version
 
-FROM alpine:3.24@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+FROM alpine:3.24@sha256:5b02b42e375f7426f8d65c3af331ca05d9878f9989230354504e0b9dfd431f60
 
 COPY --from=builder /go/bin/gocryptfs /usr/local/bin/gocryptfs
 
