@@ -17,4 +17,5 @@ jobs:
       arg_name: GOCRYPTFS_VERSION
       dockerfile_path: ./Dockerfile
     secrets:
-      TAG_PUSH_TOKEN: ${{ secrets.TAG_PUSH_TOKEN }}
+      CI_APP_CLIENT_ID: ${{ secrets.CI_APP_CLIENT_ID }}
+      CI_APP_PRIVATE_KEY: ${{ secrets.CI_APP_PRIVATE_KEY }}
