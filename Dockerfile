@@ -1,4 +1,4 @@
-FROM golang:1.27-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d AS builder
+FROM golang:1.27-alpine@sha256:f2c872bcee949b7be9c490efd02b48a8a2fbf947cdf533f1c58525ec9d8170fd AS builder
 
 ARG GOCRYPTFS_VERSION=2.6.1
 # gocryptfs v2.6.1 pins golang.org/x/crypto v0.33.0, which carries a batch of
