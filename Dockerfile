@@ -1,6 +1,6 @@
 FROM golang:1.27-alpine@sha256:70bd7ddea8b6cbe5d6943cde279d6b67feb10cc924fb9100d1d8757c1575b280 AS builder
 
-ARG GOCRYPTFS_VERSION=2.6.1
+ARG GOCRYPTFS_VERSION=2.7.0
 # gocryptfs v2.6.1 pins golang.org/x/crypto v0.33.0, which carries a batch of
 # critical advisories in x/crypto/ssh. gocryptfs only imports scrypt, hkdf and
 # chacha20poly1305, so none of that code is reachable, but the module version is
